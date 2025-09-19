@@ -1,0 +1,44 @@
+{% extends 'revista/base.html' %}
+{% block content %}
+<h2 class="mb-3">{% if object %}Editar publicación{% else %}Nueva publicación{% endif %}</h2>
+
+<form method="post" novalidate>
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+  <div class="mb-3">
+    {{ form.title.label_tag }} 
+    {{ form.title }}
+    {{ form.title.errors }}
+  </div>
+  <div class="mb-3">
+    {{ form.content.label_tag }}
+    {{ form.content }}
+    {{ form.content.errors }}
+  </div>
+  <div class="row">
+    <div class="col-md-4 mb-3">
+      {{ form.publisher.label_tag }}
+      {{ form.publisher }}
+      {{ form.publisher.errors }}
+    </div>
+    <div class="col-md-4 mb-3">
+      {{ form.authorizer.label_tag }}
+      {{ form.authorizer }}
+      {{ form.authorizer.errors }}
+    </div>
+    <div class="col-md-2 mb-3">
+      {{ form.status.label_tag }}
+      {{ form.status }}
+      {{ form.status.errors }}
+    </div>
+    <div class="col-md-2 mb-3">
+      {{ form.published_at.label_tag }}
+      {{ form.published_at }}
+      {{ form.published_at.errors }}
+    </div>
+  </div>
+
+  <button class="btn btn-success" type="submit">Guardar</button>
+  <a class="btn btn-secondary" href="{% url 'revista:publications_list' %}">Cancelar</a>
+</form>
+{% endblock %}

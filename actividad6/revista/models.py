@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.text import slugify
 from django.core.exceptions import ValidationError
+from django.urls import reverse
 
 class Student(models.Model):
     student_id = models.CharField('Matrícula', max_length=20, unique=True)
@@ -22,9 +23,9 @@ class Student(models.Model):
 
 class Publication(models.Model):
     STATUS_CHOICES = (
-        ('P', 'Pendiente'),
-        ('A', 'Autorizada'),
-        ('R', 'Rechazada'),
+        ('P','Pendiente'),
+        ('A','Autorizada'),
+        ('R','Rechazada'),
     )
     title = models.CharField('Título', max_length=255)
     slug = models.SlugField('Slug', max_length=255, unique=True, blank=True)
@@ -42,7 +43,6 @@ class Publication(models.Model):
         ordering = ['-created_at']
 
     def clean(self):
-        # Validación: no puede ser el mismo estudiante
         if self.authorizer and self.authorizer == self.publisher:
             raise ValidationError('El autor y el autorizador no pueden ser la misma persona.')
 
@@ -59,3 +59,22 @@ class Publication(models.Model):
 
     def __str__(self):
         return self.title
+
+    def get_absolute_url(self):
+        return reverse('revista:publication_detail', args=[self.slug])
+
+
+class Comment(models.Model):
+    publication = models.ForeignKey(Publication, on_delete=models.CASCADE, related_name='comments')
+    author = models.ForeignKey(Student, on_delete=models.SET_NULL, null=True, blank=True, related_name='comments')
+    content = models.TextField('Comentario')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Comentario'
+        verbose_name_plural = 'Comentarios'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        author = self.author if self.author else "Anónimo"
+        return f"Comentario de {author} en {self.publication}"
