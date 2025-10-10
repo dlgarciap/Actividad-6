@@ -1,80 +1,75 @@
 from django.db import models
-from django.utils.text import slugify
-from django.core.exceptions import ValidationError
 from django.urls import reverse
 
-class Student(models.Model):
-    student_id = models.CharField('Matrícula', max_length=20, unique=True)
-    first_name = models.CharField('Nombre', max_length=100)
-    last_name = models.CharField('Apellido', max_length=100)
-    email = models.EmailField('Correo', blank=True, null=True)
-    career = models.CharField('Carrera', max_length=100, blank=True, null=True)
-    phone = models.CharField('Teléfono', max_length=20, blank=True, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+class Publisher(models.Model):
+    first_name = models.CharField("Nombre", max_length=50)
+    last_name = models.CharField("Apellido", max_length=50)
+    student_id = models.CharField("Carnet", max_length=30, unique=True)
+    email = models.EmailField("Email")
 
     class Meta:
-        verbose_name = 'Estudiante'
-        verbose_name_plural = 'Estudiantes'
-        ordering = ['last_name', 'first_name']
+        verbose_name = "Estudiante Publicador"
+        verbose_name_plural = "Estudiantes Publicadores"
 
     def __str__(self):
-        return f"{self.student_id} - {self.first_name} {self.last_name}"
+        return f"{self.first_name} {self.last_name} ({self.student_id})"
+
+    def get_absolute_url(self):
+        return reverse('revista:publisher_detail', kwargs={'pk': self.pk})
 
 
-class Publication(models.Model):
-    STATUS_CHOICES = (
-        ('P','Pendiente'),
-        ('A','Autorizada'),
-        ('R','Rechazada'),
-    )
-    title = models.CharField('Título', max_length=255)
-    slug = models.SlugField('Slug', max_length=255, unique=True, blank=True)
-    content = models.TextField('Contenido')
-    publisher = models.ForeignKey(Student, on_delete=models.CASCADE, related_name='published_articles', verbose_name='Publica')
-    authorizer = models.ForeignKey(Student, on_delete=models.SET_NULL, null=True, blank=True, related_name='authorized_articles', verbose_name='Autoriza')
-    status = models.CharField('Estado', max_length=1, choices=STATUS_CHOICES, default='P')
-    published_at = models.DateTimeField('Fecha de publicación', null=True, blank=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
+class Authorizer(models.Model):
+    first_name = models.CharField("Nombre", max_length=50)
+    last_name = models.CharField("Apellido", max_length=50)
+    student_id = models.CharField("Carnet", max_length=30, unique=True)
+    email = models.EmailField("Email")
 
     class Meta:
-        verbose_name = 'Publicación'
-        verbose_name_plural = 'Publicaciones'
-        ordering = ['-created_at']
+        verbose_name = "Estudiante Autorizador"
+        verbose_name_plural = "Estudiantes Autorizadores"
 
-    def clean(self):
-        if self.authorizer and self.authorizer == self.publisher:
-            raise ValidationError('El autor y el autorizador no pueden ser la misma persona.')
+    def __str__(self):
+        return f"{self.first_name} {self.last_name} ({self.student_id})"
 
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            base = slugify(self.title)[:200]
-            slug = base
-            counter = 1
-            while Publication.objects.filter(slug=slug).exclude(pk=self.pk).exists():
-                slug = f"{base}-{counter}"
-                counter += 1
-            self.slug = slug
-        super().save(*args, **kwargs)
+    def get_absolute_url(self):
+        return reverse('revista:authorizer_detail', kwargs={'pk': self.pk})
+
+
+class Article(models.Model):
+    STATUS_CHOICES = (
+        ('DR', 'Borrador'),
+        ('PB', 'Publicada'),
+    )
+    title = models.CharField("Título", max_length=200)
+    content = models.TextField("Contenido")
+    publisher = models.ForeignKey(Publisher, on_delete=models.CASCADE, related_name='articles')
+    authorizer = models.ForeignKey(Authorizer, on_delete=models.SET_NULL, null=True, blank=True, related_name='authorized_articles')
+    published_at = models.DateTimeField("Fecha publicación", null=True, blank=True)
+    status = models.CharField("Estado", max_length=2, choices=STATUS_CHOICES, default='DR')
+
+    class Meta:
+        ordering = ['-published_at']
+        verbose_name = "Artículo"
+        verbose_name_plural = "Artículos"
 
     def __str__(self):
         return self.title
 
     def get_absolute_url(self):
-        return reverse('revista:publication_detail', args=[self.slug])
+        return reverse('revista:article_detail', kwargs={'pk': self.pk})
 
 
 class Comment(models.Model):
-    publication = models.ForeignKey(Publication, on_delete=models.CASCADE, related_name='comments')
-    author = models.ForeignKey(Student, on_delete=models.SET_NULL, null=True, blank=True, related_name='comments')
-    content = models.TextField('Comentario')
+    article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name='comments')
+    commenter_name = models.CharField("Nombre quien comenta", max_length=150)
+    commenter_publisher = models.ForeignKey(Publisher, null=True, blank=True, on_delete=models.SET_NULL)
+    text = models.TextField("Comentario")
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        verbose_name = 'Comentario'
-        verbose_name_plural = 'Comentarios'
         ordering = ['-created_at']
+        verbose_name = "Comentario"
+        verbose_name_plural = "Comentarios"
 
     def __str__(self):
-        author = self.author if self.author else "Anónimo"
-        return f"Comentario de {author} en {self.publication}"
+        return f"Comentario por {self.commenter_name} en {self.article.title}"

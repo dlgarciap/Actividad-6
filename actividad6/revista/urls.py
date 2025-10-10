@@ -1,20 +1,22 @@
 from django.urls import path
-from .views import (
-    PublicationListView, PublicationCreateView, PublicationUpdateView, PublicationDetailView,
-    StudentListView, StudentCreateView, StudentUpdateView,
-)
+from . import views
 
 app_name = 'revista'
 
 urlpatterns = [
-    # publicaciones
-    path('publicaciones/', PublicationListView.as_view(), name='publications_list'),
-    path('publicaciones/nueva/', PublicationCreateView.as_view(), name='publication_create'),
-    path('publicaciones/<slug:slug>/editar/', PublicationUpdateView.as_view(), name='publication_update'),
-    path('publicaciones/<slug:slug>/', PublicationDetailView.as_view(), name='publication_detail'),
+    # Articles
+    path('articles/', views.ArticleListView.as_view(), name='article_list'),
+    path('articles/add/', views.ArticleCreateView.as_view(), name='article_add'),
+    path('articles/<int:pk>/', views.ArticleDetailView.as_view(), name='article_detail'),
+    path('articles/<int:pk>/edit/', views.ArticleUpdateView.as_view(), name='article_edit'),
 
-    # estudiantes (publicadores y autorizadores)
-    path('estudiantes/', StudentListView.as_view(), name='students_list'),
-    path('estudiantes/nuevo/', StudentCreateView.as_view(), name='student_create'),
-    path('estudiantes/<int:pk>/editar/', StudentUpdateView.as_view(), name='student_update'),
+    # Publishers
+    path('publishers/', views.PublisherListView.as_view(), name='publisher_list'),
+    path('publishers/<int:pk>/', views.PublisherDetailView.as_view(), name='publisher_detail'),
+    path('publishers/<int:pk>/edit/', views.PublisherUpdateView.as_view(), name='publisher_edit'),
+
+    # Authorizers
+    path('authorizers/', views.AuthorizerListView.as_view(), name='authorizer_list'),
+    path('authorizers/<int:pk>/', views.AuthorizerDetailView.as_view(), name='authorizer_detail'),
+    path('authorizers/<int:pk>/edit/', views.AuthorizerUpdateView.as_view(), name='authorizer_edit'),
 ]

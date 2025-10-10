@@ -1,22 +1,23 @@
 from django.contrib import admin
-from .models import Student, Publication, Comment
+from .models import Publisher, Authorizer, Article, Comment
 
-@admin.register(Student)
-class StudentAdmin(admin.ModelAdmin):
-    list_display = ('student_id', 'first_name', 'last_name', 'email', 'career')
-    search_fields = ('student_id','first_name','last_name','email')
-    list_per_page = 25
+@admin.register(Publisher)
+class PublisherAdmin(admin.ModelAdmin):
+    list_display = ('first_name', 'last_name', 'student_id', 'email')
+    search_fields = ('first_name', 'last_name', 'student_id')
 
-@admin.register(Publication)
-class PublicationAdmin(admin.ModelAdmin):
-    list_display = ('title','publisher','authorizer','status','published_at')
-    list_filter = ('status','published_at')
-    search_fields = ('title','content','publisher__first_name','publisher__last_name')
-    raw_id_fields = ('publisher','authorizer')
-    date_hierarchy = 'published_at'
+@admin.register(Authorizer)
+class AuthorizerAdmin(admin.ModelAdmin):
+    list_display = ('first_name', 'last_name', 'student_id', 'email')
+    search_fields = ('first_name', 'last_name', 'student_id')
+
+@admin.register(Article)
+class ArticleAdmin(admin.ModelAdmin):
+    list_display = ('title', 'publisher', 'authorizer', 'status', 'published_at')
+    list_filter = ('status', 'publisher', 'authorizer')
+    search_fields = ('title', 'content')
 
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ('publication', 'author', 'created_at')
-    search_fields = ('content', 'author__first_name', 'author__last_name')
-    list_filter = ('created_at',)
+    list_display = ('commenter_name', 'article', 'created_at')
+    search_fields = ('commenter_name', 'text')
