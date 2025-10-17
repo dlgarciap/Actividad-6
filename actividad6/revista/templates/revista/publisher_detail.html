@@ -1,0 +1,7 @@
+{% extends 'revista/base.html' %}
+{% block content %}
+<h2>Detalle del Publicador</h2>
+<p><strong>Nombre:</strong> {{ publisher.first_name }} {{ publisher.last_name }}</p>
+<p><strong>Email:</strong> {{ publisher.email }}</p>
+<a class="btn" href="{% url 'publishers_list' %}">Volver</a>
+{% endblock %}

@@ -1,0 +1,8 @@
+{% extends 'revista/base.html' %}
+{% block content %}
+<h2>Detalle del Estudiante</h2>
+<p><strong>Nombre:</strong> {{ estudiante.first_name }} {{ estudiante.last_name }}</p>
+<p><strong>Carnet:</strong> {{ estudiante.student_id }}</p>
+<p><strong>Email:</strong> {{ estudiante.email }}</p>
+<a class="btn" href="{% url 'students_list' %}">Volver</a>
+{% endblock %}

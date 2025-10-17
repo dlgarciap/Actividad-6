@@ -1,34 +1,26 @@
 {% extends 'revista/base.html' %}
-{% block title %}Listado de Autorizadores{% endblock %}
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <h1>Autorizadores</h1>
-  <a class="btn btn-primary" href="#">Crear autorizador</a>
-</div>
-
-<table class="table table-striped table-bordered">
-  <thead class="table-light">
-    <tr>
-      <th>Nombre</th>
-      <th>Carnet</th>
-      <th>Email</th>
-      <th style="width:140px;">Acciones</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for authorizer in authorizers %}
-    <tr>
-      <td>{{ authorizer.first_name }} {{ authorizer.last_name }}</td>
-      <td>{{ authorizer.student_id }}</td>
-      <td>{{ authorizer.email }}</td>
-      <td>
-        <a class="btn btn-sm btn-info me-1" href="{% url 'revista:authorizer_detail' authorizer.pk %}">VER</a>
-        <a class="btn btn-sm btn-warning" href="{% url 'revista:authorizer_edit' authorizer.pk %}">EDITAR</a>
-      </td>
-    </tr>
-    {% empty %}
-    <tr><td colspan="4" class="text-center">No hay autorizadores.</td></tr>
-    {% endfor %}
-  </tbody>
+<h2>Listado de autorizadores</h2>
+<a class="btn" href="{% url 'authorizer_create' %}">Agregar autorizador</a>
+<table>
+  <tr>
+    <th>Nombre</th>
+    <th>Apellido</th>
+    <th>Email</th>
+    <th>Acciones</th>
+  </tr>
+  {% for a in authorizers %}
+  <tr>
+    <td>{{ a.first_name }}</td>
+    <td>{{ a.last_name }}</td>
+    <td>{{ a.email }}</td>
+    <td>
+      <a class="btn" href="{% url 'authorizer_detail' a.id %}">Ver</a>
+      <a class="btn" href="{% url 'authorizer_edit' a.id %}">Editar</a>
+    </td>
+  </tr>
+  {% empty %}
+  <tr><td colspan="4">No hay autorizadores registrados.</td></tr>
+  {% endfor %}
 </table>
 {% endblock %}

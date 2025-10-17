@@ -1,24 +1,10 @@
 {% extends 'revista/base.html' %}
-{% block title %}{% if object %}Editar estudiante{% else %}Crear estudiante{% endif %}{% endblock %}
 {% block content %}
-<h2>{% if object %}Editar estudiante{% else %}Crear estudiante{% endif %}</h2>
-
+<h2>Formulario de Estudiante</h2>
 <form method="post">
   {% csrf_token %}
-  <div class="mb-3">
-    {{ form.first_name.label_tag }} {{ form.first_name }} {{ form.first_name.errors }}
-  </div>
-  <div class="mb-3">
-    {{ form.last_name.label_tag }} {{ form.last_name }} {{ form.last_name.errors }}
-  </div>
-  <div class="mb-3">
-    {{ form.student_id.label_tag }} {{ form.student_id }} {{ form.student_id.errors }}
-  </div>
-  <div class="mb-3">
-    {{ form.email.label_tag }} {{ form.email }} {{ form.email.errors }}
-  </div>
-
-  <button class="btn btn-primary" type="submit">Guardar</button>
-  <a class="btn btn-secondary" href="{% url 'revista:publisher_list' %}">Cancelar</a>
+  {{ form.as_p }}
+  <button type="submit" class="btn">Guardar</button>
+  <a class="btn" href="{% url 'students_list' %}">Cancelar</a>
 </form>
 {% endblock %}

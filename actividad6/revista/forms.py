@@ -1,47 +1,73 @@
 from django import forms
-from .models import Student, Publication, Comment
+from .models import Student, Publisher, Authorizer, Publication
+from django.contrib.auth.models import User
 
+
+# ----- FORMULARIOS PRINCIPALES -----
 class StudentForm(forms.ModelForm):
     class Meta:
         model = Student
-        fields = ['student_id', 'first_name', 'last_name', 'email', 'career', 'phone']
-        widgets = {
-            'student_id': forms.TextInput(attrs={'class': 'form-control'}),
-            'first_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'last_name': forms.TextInput(attrs={'class': 'form-control'}),
-            'email': forms.EmailInput(attrs={'class': 'form-control'}),
-            'career': forms.TextInput(attrs={'class': 'form-control'}),
-            'phone': forms.TextInput(attrs={'class': 'form-control'}),
+        fields = ['first_name', 'last_name', 'student_id', 'email']
+        labels = {
+            'first_name': 'Nombre',
+            'last_name': 'Apellido',
+            'student_id': 'Carnet',
+            'email': 'Correo electrónico',
+        }
+
+
+class PublisherForm(forms.ModelForm):
+    class Meta:
+        model = Publisher
+        fields = ['first_name', 'last_name', 'email']
+        labels = {
+            'first_name': 'Nombre',
+            'last_name': 'Apellido',
+            'email': 'Correo electrónico',
+        }
+
+
+class AuthorizerForm(forms.ModelForm):
+    class Meta:
+        model = Authorizer
+        fields = ['first_name', 'last_name', 'email']
+        labels = {
+            'first_name': 'Nombre',
+            'last_name': 'Apellido',
+            'email': 'Correo electrónico',
         }
 
 
 class PublicationForm(forms.ModelForm):
     class Meta:
         model = Publication
-        fields = ['title', 'content', 'publisher', 'authorizer', 'status', 'published_at']
-        widgets = {
-            'title': forms.TextInput(attrs={'class': 'form-control'}),
-            'content': forms.Textarea(attrs={'class': 'form-control', 'rows': 6}),
-            'publisher': forms.Select(attrs={'class': 'form-select'}),
-            'authorizer': forms.Select(attrs={'class': 'form-select'}),
-            'status': forms.Select(attrs={'class': 'form-select'}),
-            'published_at': forms.DateTimeInput(attrs={'class': 'form-control', 'type': 'datetime-local'}),
+        fields = ['title', 'content', 'date', 'author']
+        labels = {
+            'title': 'Título',
+            'content': 'Contenido',
+            'date': 'Fecha de publicación',
+            'author': 'Autor',
         }
 
-    def clean(self):
-        cleaned = super().clean()
-        publisher = cleaned.get('publisher')
-        authorizer = cleaned.get('authorizer')
-        if publisher and authorizer and publisher == authorizer:
-            raise forms.ValidationError('El publicador y el autorizador no pueden ser la misma persona.')
-        return cleaned
 
+# ----- REGISTRO DE USUARIO -----
+class UserRegisterForm(forms.ModelForm):
+    password = forms.CharField(label='Contraseña', widget=forms.PasswordInput)
 
-class CommentForm(forms.ModelForm):
     class Meta:
-        model = Comment
-        fields = ['author', 'content']
-        widgets = {
-            'author': forms.Select(attrs={'class': 'form-select'}),
-            'content': forms.Textarea(attrs={'class': 'form-control', 'rows': 3, 'placeholder':'Escribe tu comentario...'}),
+        model = User
+        fields = ['username', 'first_name', 'last_name', 'email', 'password']
+        labels = {
+            'username': 'Nombre de usuario',
+            'first_name': 'Nombre',
+            'last_name': 'Apellido',
+            'email': 'Correo electrónico',
+            'password': 'Contraseña'
+        }
+        help_texts = { 
+            'username': '',
+            'first_name': '',
+            'last_name': '',
+            'email': '',
+            'password': '',
         }

@@ -1,56 +1,26 @@
 {% extends 'revista/base.html' %}
-{% block title %}Listado de Publicaciones{% endblock %}
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <h1>Publicaciones</h1>
-  <a class="btn btn-primary" href="{% url 'revista:publication_add' %}">Crear publicación</a>
-</div>
-
-<table class="table table-striped table-bordered align-middle">
-  <thead class="table-light">
-    <tr>
-      <th>Título</th>
-      <th>Publicador</th>
-      <th>Autorizador</th>
-      <th>Estado</th>
-      <th>Fecha publicación</th>
-      <th style="width:160px;">Acciones</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for publication in publications %}
-    <tr>
-      <td>{{ publication.title }}</td>
-      <td>{{ publication.publisher }}</td>
-      <td>{{ publication.authorizer|default:"(Sin autorizar)" }}</td>
-      <td>{{ publication.get_status_display }}</td>
-      <td>{% if publication.published_at %}{{ publication.published_at|date:"Y-m-d H:i" }}{% else %}-{% endif %}</td>
-      <td>
-        <a class="btn btn-sm btn-info me-1" href="{% url 'revista:publication_detail' publication.pk %}">VER</a>
-        <a class="btn btn-sm btn-warning" href="{% url 'revista:publication_edit' publication.pk %}">EDITAR</a>
-      </td>
-    </tr>
-    {% empty %}
-    <tr><td colspan="6" class="text-center">No hay publicaciones registradas.</td></tr>
-    {% endfor %}
-  </tbody>
+<h2>Listado de publicaciones</h2>
+<a class="btn" href="{% url 'publication_create' %}">Agregar publicación</a>
+<table>
+  <tr>
+    <th>Título</th>
+    <th>Fecha</th>
+    <th>Autor</th>
+    <th>Acciones</th>
+  </tr>
+  {% for pub in publications %}
+  <tr>
+    <td>{{ pub.title }}</td>
+    <td>{{ pub.date }}</td>
+    <td>{{ pub.author }}</td>
+    <td>
+      <a class="btn" href="{% url 'publication_detail' pub.id %}">Ver</a>
+      <a class="btn" href="{% url 'publication_edit' pub.id %}">Editar</a>
+    </td>
+  </tr>
+  {% empty %}
+  <tr><td colspan="4">No hay publicaciones registradas.</td></tr>
+  {% endfor %}
 </table>
-
-{% if is_paginated %}
-<nav aria-label="Paginación">
-  <ul class="pagination">
-    {% if page_obj.has_previous %}
-      <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}">Anterior</a></li>
-    {% else %}
-      <li class="page-item disabled"><span class="page-link">Anterior</span></li>
-    {% endif %}
-    <li class="page-item disabled"><span class="page-link">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span></li>
-    {% if page_obj.has_next %}
-      <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}">Siguiente</a></li>
-    {% else %}
-      <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
-    {% endif %}
-  </ul>
-</nav>
-{% endif %}
 {% endblock %}

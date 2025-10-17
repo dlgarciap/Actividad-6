@@ -1,10 +1,10 @@
 {% extends 'revista/base.html' %}
 {% block content %}
-<h2>Formulario de Publicación</h2>
+<h2>Formulario de Autorizador</h2>
 <form method="post">
   {% csrf_token %}
   {{ form.as_p }}
   <button type="submit" class="btn">Guardar</button>
-  <a class="btn" href="{% url 'publications_list' %}">Cancelar</a>
+  <a class="btn" href="{% url 'authorizers_list' %}">Cancelar</a>
 </form>
 {% endblock %}

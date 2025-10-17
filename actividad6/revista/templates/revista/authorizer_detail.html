@@ -1,0 +1,7 @@
+{% extends 'revista/base.html' %}
+{% block content %}
+<h2>Detalle del Autorizador</h2>
+<p><strong>Nombre:</strong> {{ authorizer.first_name }} {{ authorizer.last_name }}</p>
+<p><strong>Email:</strong> {{ authorizer.email }}</p>
+<a class="btn" href="{% url 'authorizers_list' %}">Volver</a>
+{% endblock %}
